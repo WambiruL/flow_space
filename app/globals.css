@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background-color: #0a0a0f;
+  color: #e8e8f0;
+  font-family: var(--font-body);
+}
+
+body {
+  min-height: 100vh;
+  background: #0a0a0f;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2a3d;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3d3d5c;
+}
+
+/* Selection */
+::selection {
+  background: #f0a05033;
+  color: #f0a050;
+}
+
+/* Focus */
+:focus-visible {
+  outline: 1px solid #f0a050;
+  outline-offset: 2px;
+}
+
+@layer components {
+  .card {
+    @apply bg-bg-card border border-border-subtle rounded-xl p-4;
+  }
+  
+  .card-hover {
+    @apply card transition-all duration-200 hover:border-border-default hover:bg-bg-hover;
+  }
+
+  .btn-primary {
+    @apply bg-accent-warm text-bg-primary font-medium px-4 py-2 rounded-lg
+    hover:bg-accent-warm-dim transition-colors duration-150 text-sm;
+  }
+
+  .btn-secondary {
+    @apply bg-bg-tertiary text-text-primary border border-border-default px-4 py-2 rounded-lg
+    hover:bg-bg-hover transition-colors duration-150 text-sm;
+  }
+
+  .btn-ghost {
+    @apply text-text-secondary px-3 py-1.5 rounded-lg
+    hover:bg-bg-hover hover:text-text-primary transition-colors duration-150 text-sm;
+  }
+
+  .input {
+    @apply bg-bg-tertiary border border-border-default rounded-lg px-3 py-2 text-text-primary
+    placeholder:text-text-muted focus:border-accent-warm focus:outline-none transition-colors text-sm w-full;
+  }
+
+  .label {
+    @apply text-xs text-text-secondary uppercase tracking-wider font-medium;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium;
+  }
+
+  .section-title {
+    @apply font-display text-lg text-text-primary;
+  }
+}
