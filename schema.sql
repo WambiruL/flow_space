@@ -1,5 +1,4 @@
 -- FlowSpace Database Schema
--- Run this in Supabase SQL Editor: https://supabase.com/dashboard → SQL Editor
 
 -- Enable RLS
 -- Extensions
