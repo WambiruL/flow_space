@@ -90,7 +90,7 @@ export const useStore = create<AppState>()(
         const newTask: Task = {
           id: generateId(),
           user_id: get().userId || 'local',
-          completed: false,
+  
           completed_at: null,
           created_at: now,
           updated_at: now,
