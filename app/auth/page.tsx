@@ -1,132 +1,259 @@
 'use client'
-
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useStore } from '@/store'
 
-export default function AuthPage() {
-  const router = useRouter()
-  const setUserId = useStore(s => s.setUserId)
-  const [mode, setMode] = useState<'login' | 'signup'>('login')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [demoMode, setDemoMode] = useState(false)
 
-  const handleAuth = async () => {
-    setLoading(true)
-    setError('')
-    try {
-      const supabase = createClient()
-      if (mode === 'login') {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-        if (error) throw error
-        setUserId(data.user?.id || null)
-      } else {
-        const { data, error } = await supabase.auth.signUp({ email, password })
-        if (error) throw error
-        setUserId(data.user?.id || null)
-      }
+// ── Local auth helpers ──────────────────────────────────────────────────────
+// These store users in localStorage.
+
+// const USERS_KEY = 'fs_users'
+// const AUTH_KEY  = 'fs_auth'
+
+// function getUsers(): Record<string, any> {
+//    try { return JSON.parse(localStorage.getItem(USERS_KEY) || '{}') } catch { return {} }
+// }
+
+// function registerUser(email: string, password: string, name: string) {
+//   const users = getUsers()
+//   if (users[email]) return { error: 'An account with this email already exists.' }
+//   const user = { email, password, name, id: Date.now().toString(36), createdAt: new Date().toISOString() }
+//   users[email] = user
+//   localStorage.setItem(USERS_KEY, JSON.stringify(users))
+//   return { user }
+// }
+
+// function loginUser(email: string, password: string) {
+//   const users = getUsers()
+//   const user = users[email]
+//   if (!user) return { error: 'No account found with this email.' }
+//   if (user.password !== password) return { error: 'Incorrect password.' }
+//   return { user }
+// }
+
+// ── Component ───────────────────────────────────────────────────────────────
+export default function AuthPage() {
+  const router       = useRouter()
+  const params       = useSearchParams()
+  const setUserId    = useStore(s => s.setUserId)
+
+  const initialMode = params.get('mode') === 'signup' ? 'signup' : 'login'
+  const [tab,     setTab]     = useState<'login' | 'signup'>(initialMode)
+  const [name,    setName]    = useState('')
+  const [email,   setEmail]   = useState('')
+  const [pw,      setPw]      = useState('')
+  const [pw2,     setPw2]     = useState('')
+  const [error,   setError]   = useState('')
+  const [loading, setLoading] = useState(false)
+
+
+  //redirect users if already logged in
+
+useEffect(() => {
+  const checkUser = async () => {
+    const {
+      data: { user }
+    } = await supabase.auth.getUser()
+
+    if (user) {
       router.push('/dashboard')
-    } catch (err: any) {
-      setError(err.message || 'Authentication failed')
-    } finally {
-      setLoading(false)
     }
   }
 
-  const handleDemo = () => {
-    setUserId('demo-user')
-    router.push('/dashboard')
+  checkUser()
+}, [])
+
+  // Handle ?demo=true query param (from landing page CTA)
+  useEffect(() => {
+    if (params.get('demo') === 'true') handleDemo()
+  }, [])
+
+  const handleDemo = async () => {
+    const { data, error } = await supabase.auth.signInAnonymously()
+
+    if (error) {
+      setError(error.message)
+      return
+    }
+
+    if (data.user) {
+      setUserId(data.user.id)
+      router.push('/dashboard')
+    }
   }
 
+  const submit = async () => {
+  setError('')
+
+  if (!email.trim() || !pw.trim()) {
+    setError('Please fill in all fields.')
+    return
+  }
+
+  setLoading(true)
+
+  if (tab === 'signup') {
+    if (!name.trim()) {
+      setError('Please enter your name.')
+      setLoading(false)
+      return
+    }
+
+    if (pw.length < 6) {
+      setError('Password must be at least 6 characters.')
+      setLoading(false)
+      return
+    }
+
+    if (pw !== pw2) {
+      setError('Passwords do not match.')
+      setLoading(false)
+      return
+    }
+
+    const { data, error } = await supabase.auth.signUp({
+      email: email.trim().toLowerCase(),
+      password: pw,
+      options: {
+        data: {
+          name: name.trim(),
+        },
+      },
+    })
+
+    setLoading(false)
+
+    if (error) {
+      setError(error.message)
+      return
+    }
+
+    if (data.user) {
+      setUserId(data.user.id)
+      router.push('/dashboard')
+    }
+  } else {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email.trim().toLowerCase(),
+      password: pw,
+    })
+
+    setLoading(false)
+
+    if (error) {
+      setError(error.message)
+      return
+    }
+
+    if (data.user) {
+      setUserId(data.user.id)
+      router.push('/dashboard')
+    }
+  }
+}
+
   return (
-    <div className="min-h-screen bg-bg-primary flex items-center justify-center p-4">
-      <div className="w-full max-w-md animate-fade-in">
+    <div className="min-h-screen bg-bg-primary flex items-center justify-center p-5">
+      <div className="w-full max-w-sm animate-fade-in">
+
         {/* Logo */}
-        <div className="text-center mb-10">
-          <h1 className="font-display text-4xl text-text-primary mb-2">
-            Flow<span className="text-accent-warm">Space</span>
+        <div className="text-center mb-8">
+          <h1 className="font-display text-3xl text-text-primary mb-1">
+            Flow<em className="not-italic text-accent-warm">Space</em>
           </h1>
-          <p className="text-text-secondary text-sm">Your personal mental operating system</p>
+          <p className="text-text-muted text-sm">Your personal mental operating system</p>
         </div>
 
         {/* Card */}
-        <div className="card border-border-default">
-          <div className="flex gap-2 mb-6">
-            <button
-              onClick={() => setMode('login')}
-              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
-                mode === 'login' ? 'bg-accent-warm text-bg-primary' : 'text-text-secondary hover:text-text-primary'
-              }`}
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => setMode('signup')}
-              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
-                mode === 'signup' ? 'bg-accent-warm text-bg-primary' : 'text-text-secondary hover:text-text-primary'
-              }`}
-            >
-              Create Account
-            </button>
+        <div className="card">
+
+          {/* Tabs */}
+          <div className="flex border-b border-border-default mb-6">
+            {(['login', 'signup'] as const).map(t => (
+              <button
+                key={t}
+                onClick={() => { setTab(t); setError('') }}
+                className={`flex-1 pb-3 text-sm transition-colors border-b-2 -mb-px ${
+                  tab === t
+                    ? 'text-accent-warm border-accent-warm font-medium'
+                    : 'text-text-muted border-transparent hover:text-text-secondary'
+                }`}
+              >
+                {t === 'login' ? 'Sign in' : 'Create account'}
+              </button>
+            ))}
           </div>
 
+          {/* Error */}
+          {error && (
+            <div className="text-xs bg-red-50 border border-red-200 text-red-700 px-3 py-2.5 rounded-lg mb-4 leading-relaxed">
+              {error}
+            </div>
+          )}
+
+          {/* Fields */}
           <div className="space-y-4">
+            {tab === 'signup' && (
+              <div>
+                <label className="label mb-1.5 block">Your name</label>
+                <input className="input" value={name} onChange={e => setName(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && submit()} placeholder="Ada Okafor" autoFocus />
+              </div>
+            )}
             <div>
               <label className="label mb-1.5 block">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleAuth()}
-                placeholder="you@example.com"
-                className="input"
-              />
+              <input className="input" type="email" value={email} onChange={e => setEmail(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && submit()} placeholder="you@example.com"
+                autoFocus={tab === 'login'} />
             </div>
             <div>
               <label className="label mb-1.5 block">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleAuth()}
-                placeholder="••••••••"
-                className="input"
-              />
+              <input className="input" type="password" value={pw} onChange={e => setPw(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && submit()} placeholder="At least 6 characters" />
             </div>
-
-            {error && (
-              <p className="text-red-400 text-xs bg-red-400/10 px-3 py-2 rounded-lg">{error}</p>
+            {tab === 'signup' && (
+              <div>
+                <label className="label mb-1.5 block">Confirm password</label>
+                <input className="input" type="password" value={pw2} onChange={e => setPw2(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && submit()} placeholder="Repeat password" />
+              </div>
             )}
 
-            <button
-              onClick={handleAuth}
-              disabled={loading || !email || !password}
-              className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? 'Please wait...' : mode === 'login' ? 'Enter FlowSpace' : 'Create Account'}
+            <button onClick={submit} disabled={loading}
+              className="btn-primary w-full py-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
+              {loading ? 'One moment…' : tab === 'login' ? 'Sign in to FlowSpace' : 'Create my space'}
             </button>
 
-            <div className="relative my-2">
-              <div className="border-t border-border-subtle" />
-              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-bg-card px-2 text-text-muted text-xs">or</span>
+            <div className="flex items-center gap-3 text-xs text-text-muted">
+              <div className="flex-1 border-t border-border-default" />
+              or
+              <div className="flex-1 border-t border-border-default" />
             </div>
 
-            <button
-              onClick={handleDemo}
-              className="btn-secondary w-full"
-            >
-              Continue with Demo (Offline)
+            <button onClick={handleDemo} className="btn-secondary w-full py-2.5">
+              Continue as guest
             </button>
           </div>
         </div>
 
-        <p className="text-center text-text-muted text-xs mt-6">
-          Demo mode stores everything locally. No account needed.
-        </p>
+        {/* Footer links */}
+        <div className="text-center mt-5 text-xs text-text-muted space-x-3">
+          <button onClick={() => router.push('/landing')} className="hover:text-text-secondary transition-colors">
+            ← Back to home
+          </button>
+          {tab === 'login' && (
+            <button onClick={() => setTab('signup')} className="text-accent-warm hover:underline">
+              Create account
+            </button>
+          )}
+          {tab === 'signup' && (
+            <button onClick={() => setTab('login')} className="text-accent-warm hover:underline">
+              Already have one?
+            </button>
+          )}
+        </div>
+
       </div>
     </div>
   )

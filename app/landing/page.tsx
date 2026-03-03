@@ -1,6 +1,9 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+
 
 const FEATURES = [
   { icon: '⬡', name: 'Dashboard',     desc: 'A calm morning briefing: energy check-in, active projects at a glance, and tasks matched to how you feel right now.' },
@@ -19,7 +22,28 @@ const STEPS = [
 ]
 
 export default function LandingPage() {
-  const router = useRouter()
+  const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)  
+  useEffect(() => {
+  const checkUser = async () => {
+    const {
+      data: { user }
+    } = await supabase.auth.getUser()
+
+    setUser(user ?? null)
+    setLoading(false)
+    }
+    checkUser()
+    const { data: listener } = supabase.auth.onAuthStateChange(
+        (_event, session) => {
+        setUser(session?.user ?? null)
+        }
+    )
+    return () => {
+        listener.subscription.unsubscribe()
+    }
+    }, [])
+    const router = useRouter()
 
   return (
     <div className="min-h-screen bg-bg-primary font-body">
@@ -30,8 +54,40 @@ export default function LandingPage() {
           Flow<em className="not-italic text-accent-warm">Space</em>
         </span>
         <div className="flex items-center gap-2">
-          <button onClick={() => router.push('/auth')} className="btn-ghost">Sign in</button>
-          <button onClick={() => router.push('/auth?mode=signup')} className="btn-primary">Get started</button>
+        {!loading && user ? (
+            <>
+            <button
+                onClick={() => router.push('/dashboard')}
+                className="btn-primary"
+            >
+                Go to dashboard
+            </button>
+            <button
+                onClick={async () => {
+                await supabase.auth.signOut()
+                router.refresh()
+                }}
+                className="btn-ghost"
+            >
+                Sign out
+            </button>
+            </>
+        ) : (
+            <>
+            <button
+                onClick={() => router.push('/auth')}
+                className="btn-ghost"
+            >
+                Sign in
+            </button>
+            <button
+                onClick={() => router.push('/auth?mode=signup')}
+                className="btn-primary"
+            >
+                Get started
+            </button>
+            </>
+        )}
         </div>
       </nav>
 
@@ -50,7 +106,7 @@ export default function LandingPage() {
           Structure for your projects, intelligence for your tasks, and reflection for your decisions.
         </p>
         <div className="flex gap-3 justify-center flex-wrap">
-          <button onClick={() => router.push('/auth?mode=signup')} className="btn-primary px-7 py-3 text-base">
+          <button onClick={() => router.push(user ? '/dashboard':'/auth?mode=signup')} className="btn-primary px-7 py-3 text-base">
             Start for free
           </button>
           <button onClick={() => router.push('/auth?demo=true')} className="btn-secondary px-7 py-3 text-base">
