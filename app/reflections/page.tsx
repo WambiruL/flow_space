@@ -420,11 +420,9 @@ Write a synthesis of 3-4 sentences that holds the tension between all voices and
           const response = viewing[`${v.key}_response` as keyof Reflection] as string
           if (!response) return null
           return (
-            <div key={v.key} style={{
-              padding: '28px 30px', borderRadius: 18,
-              background: v.dimColor,
-              border: `1px solid ${v.border}`,
-              borderLeft: `3px solid ${v.color}88`,
+            <div key={v.key} className="card" style={{
+              borderLeft: `3px solid ${v.color}`,
+              padding: '20px 24px',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
                 {v.icon(true)}
@@ -448,7 +446,7 @@ Write a synthesis of 3-4 sentences that holds the tension between all voices and
   // ── VIEW: new session ─────────────────────────────────────────────────────
   if (mode === 'new') {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+      <div className="space-y-6 animate-fade-in">
         <style>{`
           @keyframes councilDot {
             0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
@@ -487,10 +485,8 @@ Write a synthesis of 3-4 sentences that holds the tension between all voices and
 
         {/* Low data warning */}
         {!hasEnoughData && (
-          <div style={{
+          <div className="card-accent" style={{
             display: 'flex', gap: 12, alignItems: 'flex-start',
-            padding: '14px 16px', borderRadius: 12,
-            background: 'rgba(213,137,54,0.08)',
             border: '1px solid rgba(213,137,54,0.25)',
           }}>
             <AlertCircle size={15} style={{ color: '#D58936', flexShrink: 0, marginTop: 1 }} />
@@ -507,16 +503,8 @@ Write a synthesis of 3-4 sentences that holds the tension between all voices and
         )}
 
         {/* Dilemma input */}
-        <div style={{
-          padding: '24px 26px', borderRadius: 18,
-          background: 'rgba(52,16,18,0.70)',
-          border: '1px solid rgba(107,36,32,0.45)',
-        }}>
-          <label style={{
-            fontSize: 10, fontWeight: 800, letterSpacing: '0.10em',
-            color: '#6B2420', fontFamily: "'Nunito', sans-serif",
-            textTransform: 'uppercase', display: 'block', marginBottom: 12,
-          }}>
+         <div className="card-accent">
+           <label className="label block mb-3">
             Your dilemma
           </label>
           <textarea
@@ -525,38 +513,26 @@ Write a synthesis of 3-4 sentences that holds the tension between all voices and
             disabled={sessionStarted}
             placeholder="What decision are you wrestling with? Speak freely..."
             rows={4}
+            className="input resize-none"
             style={{
-              width: '100%', background: 'transparent',
-              border: 'none', outline: 'none', resize: 'none',
-              fontSize: 17, color: '#C8C97A',
               fontFamily: "'Cormorant Garamond', serif",
               fontStyle: dilemma ? 'italic' : 'normal',
+              fontSize: 16,
               lineHeight: 1.7,
               opacity: sessionStarted ? 0.7 : 1,
             }}
           />
           {!sessionStarted && (
-            <button
-              onClick={startSession}
-              disabled={!dilemma.trim()}
-              style={{
-                marginTop: 16,
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-                padding: '11px 22px', borderRadius: 12,
-                background: dilemma.trim()
-                  ? 'linear-gradient(135deg, #A44200, #D58936)'
-                  : 'rgba(107,36,32,0.30)',
-                border: 'none', cursor: dilemma.trim() ? 'pointer' : 'not-allowed',
-                fontSize: 13, fontWeight: 700, color: '#F2F3AE',
-                fontFamily: "'Nunito', sans-serif",
-                letterSpacing: '0.02em',
-                boxShadow: dilemma.trim() ? '0 0 22px #A4420040' : 'none',
-                transition: 'all 0.25s ease',
-              }}
-            >
-              <Sparkles size={14} />
-              Summon the Council
-            </button>
+            <div className="flex gap-2 pt-1">
+              <button
+                onClick={startSession}
+                disabled={!dilemma.trim()}
+                className="btn-primary"
+              >
+                <Sparkles size={14} />
+                Summon the Council
+              </button>
+            </div>
           )}
         </div>
 
@@ -572,13 +548,12 @@ Write a synthesis of 3-4 sentences that holds the tension between all voices and
               return (
                 <div
                   key={v.key}
+                  className="card"
                   style={{
-                    padding: '28px 30px', borderRadius: 18,
-                    background: hasContent ? v.dimColor : 'rgba(42,12,14,0.40)',
-                    border: `1px solid ${hasContent ? v.border : 'rgba(60,21,24,0.40)'}`,
-                    borderLeft: hasContent ? `3px solid ${v.color}88` : '3px solid rgba(60,21,24,0.40)',
+                    borderLeft: `3px solid ${hasContent ? v.color : 'rgba(60,21,24,0.40)'}`,
                     transition: 'all 0.4s ease',
                     animation: hasContent ? `voiceFadeIn 0.5s cubic-bezier(0.16,1,0.3,1) both` : 'none',
+                    padding: '20px 24px',
                   }}
                 >
                   {/* Voice header */}
