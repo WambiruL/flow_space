@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase'
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useStore } from '@/store'
+import { Flame } from 'lucide-react'
 
 
 // ── Local auth helpers ──────────────────────────────────────────────────────
@@ -154,32 +155,50 @@ useEffect(() => {
 }
 
   return (
-    <div className="min-h-screen bg-bg-primary flex items-center justify-center p-5">
+    <div
+      className="min-h-screen flex items-center justify-center p-5"
+      style={{
+        background: '#3C1518',
+        backgroundImage: 'radial-gradient(at 20% 30%, #A4420010 0px, transparent 55%), radial-gradient(at 80% 70%, #D5893608 0px, transparent 55%)',
+      }}
+    >
       <div className="w-full max-w-sm animate-fade-in">
 
         {/* Logo */}
-        <div className="text-center mb-8">
-          <h1 className="font-display text-3xl text-text-primary mb-1">
-            Flow<em className="not-italic text-accent-warm">Space</em>
+        <div className="text-center mb-9">
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <div
+              className="w-10 h-10 rounded-2xl flex items-center justify-center animate-float"
+              style={{ background: 'linear-gradient(135deg, #A44200, #D58936)', boxShadow: '0 0 24px #A4420040' }}
+            >
+              <Flame size={18} style={{ color: '#F2F3AE' }} />
+            </div>
+          </div>
+          <h1 className="font-display text-4xl font-semibold" style={{ color: '#F2F3AE' }}>
+            Flow
+            <span style={{
+              background: 'linear-gradient(135deg, #D58936, #F2F3AE)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}>Space</span>
           </h1>
-          <p className="text-text-muted text-sm">Your personal mental operating system</p>
+          <p className="text-sm mt-1.5" style={{ color: '#8A8A45' }}>Your personal mental operating system</p>
         </div>
 
         {/* Card */}
-        <div className="card">
+        <div className="card-accent">
 
           {/* Tabs */}
-          <div className="flex border-b border-border-default mb-6">
+          <div className="flex" style={{ borderBottom: '1px solid #6B2420', marginBottom: '1.5rem' }}>
             {(['login', 'signup'] as const).map(t => (
-              <button
-                key={t}
-                onClick={() => { setTab(t); setError('') }}
-                className={`flex-1 pb-3 text-sm transition-colors border-b-2 -mb-px ${
-                  tab === t
-                    ? 'text-accent-warm border-accent-warm font-medium'
-                    : 'text-text-muted border-transparent hover:text-text-secondary'
-                }`}
-              >
+              <button key={t} onClick={() => { setTab(t); setError('') }}
+                className="flex-1 pb-3 text-sm transition-colors border-b-2 -mb-px"
+                style={{
+                  color: tab === t ? '#F2F3AE' : '#8A8A45',
+                  fontWeight: tab === t ? 600 : 400,
+                  borderBottomColor: tab === t ? '#A44200' : 'transparent',
+                }}>
                 {t === 'login' ? 'Sign in' : 'Create account'}
               </button>
             ))}
@@ -187,7 +206,8 @@ useEffect(() => {
 
           {/* Error */}
           {error && (
-            <div className="text-xs bg-red-50 border border-red-200 text-red-700 px-3 py-2.5 rounded-lg mb-4 leading-relaxed">
+            <div className="text-xs px-3 py-2.5 rounded-xl mb-4 leading-relaxed"
+              style={{ background: '#A4420018', border: '1px solid #A4420030', color: '#E8855A' }}>
               {error}
             </div>
           )}
@@ -196,64 +216,52 @@ useEffect(() => {
           <div className="space-y-4">
             {tab === 'signup' && (
               <div>
-                <label className="label mb-1.5 block">Your name</label>
+                <label className="label block mb-1.5">Your name</label>
                 <input className="input" value={name} onChange={e => setName(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && submit()} placeholder="Ada Okafor" autoFocus />
+                  onKeyDown={e => e.key === 'Enter' && submit()}
+                  placeholder="Ada Okafor" autoFocus />
               </div>
             )}
             <div>
-              <label className="label mb-1.5 block">Email</label>
+              <label className="label block mb-1.5">Email</label>
               <input className="input" type="email" value={email} onChange={e => setEmail(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && submit()} placeholder="you@example.com"
-                autoFocus={tab === 'login'} />
+                onKeyDown={e => e.key === 'Enter' && submit()}
+                placeholder="you@example.com" autoFocus={tab === 'login'} />
             </div>
             <div>
-              <label className="label mb-1.5 block">Password</label>
+              <label className="label block mb-1.5">Password</label>
               <input className="input" type="password" value={pw} onChange={e => setPw(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && submit()} placeholder="At least 6 characters" />
+                onKeyDown={e => e.key === 'Enter' && submit()}
+                placeholder="At least 6 characters" />
             </div>
             {tab === 'signup' && (
               <div>
-                <label className="label mb-1.5 block">Confirm password</label>
+                <label className="label block mb-1.5">Confirm password</label>
                 <input className="input" type="password" value={pw2} onChange={e => setPw2(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && submit()} placeholder="Repeat password" />
+                  onKeyDown={e => e.key === 'Enter' && submit()}
+                  placeholder="Repeat password" />
               </div>
             )}
 
-            <button onClick={submit} disabled={loading}
-              className="btn-primary w-full py-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
-              {loading ? 'One moment…' : tab === 'login' ? 'Sign in to FlowSpace' : 'Create my space'}
+            <button onClick={submit} disabled={loading} className="btn-primary w-full py-2.5 justify-center disabled:opacity-40">
+              {loading ? 'One moment…' : tab === 'login' ? 'Enter FlowSpace' : 'Create my space'}
             </button>
 
-            <div className="flex items-center gap-3 text-xs text-text-muted">
-              <div className="flex-1 border-t border-border-default" />
+            <div className="flex items-center gap-3 text-xs" style={{ color: '#8A8A45' }}>
+              <div className="flex-1 border-t" style={{ borderColor: '#6B2420' }} />
               or
-              <div className="flex-1 border-t border-border-default" />
+              <div className="flex-1 border-t" style={{ borderColor: '#6B2420' }} />
             </div>
 
-            <button onClick={handleDemo} className="btn-secondary w-full py-2.5">
+            <button onClick={handleDemo} className="btn-secondary w-full py-2.5 justify-center">
               Continue as guest
             </button>
           </div>
         </div>
 
-        {/* Footer links */}
-        <div className="text-center mt-5 text-xs text-text-muted space-x-3">
-          <button onClick={() => router.push('/landing')} className="hover:text-text-secondary transition-colors">
-            ← Back to home
-          </button>
-          {tab === 'login' && (
-            <button onClick={() => setTab('signup')} className="text-accent-warm hover:underline">
-              Create account
-            </button>
-          )}
-          {tab === 'signup' && (
-            <button onClick={() => setTab('login')} className="text-accent-warm hover:underline">
-              Already have one?
-            </button>
-          )}
-        </div>
-
+        <p className="text-center text-xs mt-5" style={{ color: '#5A3A20' }}>
+          Everything stored privately in your browser.
+        </p>
       </div>
     </div>
   )
