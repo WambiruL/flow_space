@@ -848,13 +848,9 @@ Write a synthesis of 3-4 sentences that holds the tension between all voices and
 
       {/* List */}
       {filtered.length === 0 ? (
-        <div style={{
-          padding: '48px 24px', borderRadius: 16, textAlign: 'center',
-          background: 'rgba(42,12,14,0.40)',
-          border: '1px solid rgba(60,21,24,0.30)',
-        }}>
-          <Brain size={32} style={{ color: '#4A1A1C', margin: '0 auto 12px' }} />
-          <p style={{ fontSize: 14, color: '#6B2420', fontFamily: "'Nunito', sans-serif" }}>
+        <div className="empty-state">
+          <div className="empty-state-icon">◎</div>
+          <p className="empty-state-text">
             {search
               ? 'No sessions match your search.'
               : 'No sessions yet. Bring your first dilemma to the council.'}
