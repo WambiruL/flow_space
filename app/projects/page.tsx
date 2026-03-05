@@ -30,12 +30,13 @@ const emptyForm = {
 
 export default function ProjectsPage() {
   return (
-      <ToastProvider>
-        <ProjectsContent />
-      </ToastProvider>
+    <ToastProvider>
+      <ProjectsContent />
+    </ToastProvider>
   )
 }
-function ProjectsContent(){
+
+function ProjectsContent() {
   const { projects, addProject, updateProject, deleteProject, tasks } = useStore()
   const { toast } = useToast()
 
@@ -44,6 +45,7 @@ function ProjectsContent(){
   const [form,       setForm]       = useState(emptyForm)
   const [filter,     setFilter]     = useState<ProjectStatus | 'All'>('All')
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const filtered = projects.filter(p => filter === 'All' || p.status === filter)
 
@@ -51,7 +53,7 @@ function ProjectsContent(){
     const title = form.title
     if (!form.title.trim()) return
     if (editingId) updateProject(editingId, { ...form, deadline: form.deadline || null })
-    else  addProject({ ...form, deadline: form.deadline || null })
+    else addProject({ ...form, deadline: form.deadline || null })
     toast(PROJECT_TOASTS.created(title))
     setForm(emptyForm); setShowForm(false); setEditingId(null)
   }
@@ -61,11 +63,9 @@ function ProjectsContent(){
     setEditingId(p.id); setShowForm(true)
   }
 
-  const handleDelete = (id: string) => {
-    if (confirm('Delete this project?')) deleteProject(id)
-  }
-
   const ptasks = (id: string) => tasks.filter(t => t.project_id === id)
+
+  const deletingProject = deletingId ? projects.find(p => p.id === deletingId) : null
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -158,16 +158,12 @@ function ProjectsContent(){
             return (
               <div key={project.id} className="card" style={{ animationDelay: `${i * 0.05}s` }}>
                 <div className="flex items-start gap-3">
-                  {/* Colour bar */}
                   <div className="w-1 self-stretch rounded-full flex-shrink-0" style={{ background: ct.color, opacity: 0.5 }} />
 
                   <div className="flex-1 min-w-0">
-                    {/* Chips */}
                     <div className="flex items-center gap-2 flex-wrap mb-2">
-                      <span
-                        className="text-xs font-medium px-2 py-0.5 rounded-full"
-                        style={{ background: ct.bg, color: ct.color, border: `1px solid ${ct.color}25` }}
-                      >
+                      <span className="text-xs font-medium px-2 py-0.5 rounded-full"
+                        style={{ background: ct.bg, color: ct.color, border: `1px solid ${ct.color}25` }}>
                         {project.category}
                       </span>
                       <div className="flex items-center gap-1.5">
@@ -207,7 +203,7 @@ function ProjectsContent(){
                     </button>
                     <button onClick={() => handleEdit(project)} className="btn-ghost" aria-label="Edit"><Edit2 size={13} /></button>
                     <button
-                      onClick={() => handleDelete(project.id)}
+                      onClick={() => setDeletingId(project.id)}
                       className="btn-ghost"
                       style={{ color: '#8A8A45' }}
                       onMouseEnter={e => (e.currentTarget.style.color = '#E8855A')}
@@ -248,6 +244,117 @@ function ProjectsContent(){
               </div>
             )
           })}
+        </div>
+      )}
+
+      {/* ── Delete confirmation modal ── */}
+      {deletingId && (
+        <div
+          onClick={() => setDeletingId(null)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 50,
+            background: 'rgba(20,6,8,0.75)',
+            backdropFilter: 'blur(6px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: 24,
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              width: '100%', maxWidth: 380,
+              borderRadius: 20,
+              background: 'linear-gradient(160deg, rgba(58,16,18,0.98), rgba(36,10,12,0.99))',
+              border: '1px solid rgba(164,66,0,0.30)',
+              boxShadow: '0 0 60px rgba(0,0,0,0.6), 0 0 30px rgba(164,66,0,0.08)',
+              padding: '28px 28px 24px',
+            }}
+          >
+            <div style={{
+              width: 44, height: 44, borderRadius: 14, marginBottom: 18,
+              background: 'rgba(164,66,0,0.12)',
+              border: '1px solid rgba(164,66,0,0.25)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <Trash2 size={18} color="#E8855A" strokeWidth={1.8} />
+            </div>
+
+            <h3 style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: 20, fontWeight: 700, color: '#F2F3AE',
+              marginBottom: 8, letterSpacing: '-0.01em',
+            }}>
+              Delete this project?
+            </h3>
+            {deletingProject && (
+              <p style={{
+                fontSize: 13, color: '#C8C97A', fontFamily: "'Nunito', sans-serif",
+                marginBottom: 6, fontStyle: 'italic',
+              }}>
+                "{deletingProject.title}"
+              </p>
+            )}
+            <p style={{
+              fontSize: 13, color: '#A44200', lineHeight: 1.65,
+              fontFamily: "'Nunito', sans-serif", marginBottom: 24,
+            }}>
+              The project will be permanently removed. Linked tasks will remain but lose their project association.
+            </p>
+
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button
+                onClick={() => {
+                  deleteProject(deletingId)
+                  setDeletingId(null)
+                }}
+                style={{
+                  flex: 1, padding: '11px 0', borderRadius: 12,
+                  background: 'rgba(164,66,0,0.18)',
+                  border: '1px solid rgba(164,66,0,0.35)',
+                  color: '#E8855A', cursor: 'pointer',
+                  fontSize: 13, fontWeight: 700,
+                  fontFamily: "'Nunito', sans-serif",
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={e => {
+                  const el = e.currentTarget as HTMLElement
+                  el.style.background = 'rgba(164,66,0,0.28)'
+                  el.style.borderColor = 'rgba(232,133,90,0.50)'
+                }}
+                onMouseLeave={e => {
+                  const el = e.currentTarget as HTMLElement
+                  el.style.background = 'rgba(164,66,0,0.18)'
+                  el.style.borderColor = 'rgba(164,66,0,0.35)'
+                }}
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => setDeletingId(null)}
+                style={{
+                  flex: 1, padding: '11px 0', borderRadius: 12,
+                  background: 'transparent',
+                  border: '1px solid rgba(107,36,32,0.45)',
+                  color: '#8A8A45', cursor: 'pointer',
+                  fontSize: 13, fontWeight: 600,
+                  fontFamily: "'Nunito', sans-serif",
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={e => {
+                  const el = e.currentTarget as HTMLElement
+                  el.style.borderColor = 'rgba(107,36,32,0.70)'
+                  el.style.color = '#C8C97A'
+                }}
+                onMouseLeave={e => {
+                  const el = e.currentTarget as HTMLElement
+                  el.style.borderColor = 'rgba(107,36,32,0.45)'
+                  el.style.color = '#8A8A45'
+                }}
+              >
+                Keep it
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
