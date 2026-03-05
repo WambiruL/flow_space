@@ -11,6 +11,20 @@ import {
 import { cn } from '@/lib/utils'
 import OnlineSync from '@/components/OnlineSync'
 import { ToastProvider } from '@/components/toast'
+import DataLoader from '@/components/DataLoader'
+
+// Inside your layout JSX, anywhere inside the return:
+<DataLoader />
+
+// ##It renders nothing visible — it just fires once when `userId` is set and populates the store from Supabase.
+
+// ## How it all works together
+// ```
+// User logs in → setUserId() → DataLoader fires → store populated from Supabase
+// User creates task → store updates instantly (fast) → upsertTask() fires in background
+// User refreshes page → localStorage hydrates store immediately → DataLoader fires again and overwrites with fresh Supabase data
+// User opens on new device → localStorage is empty → DataLoader loads everything from Supabase
+
 
 const NAV = [
   { href: '/dashboard',   label: 'Dashboard',    icon: LayoutDashboard },

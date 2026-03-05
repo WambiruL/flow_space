@@ -1,62 +1,91 @@
-'use client'
 
-import { openDB, IDBPDatabase } from 'idb'
+import type { Project, Task, Reflection, MoodEntry, BrainDumpIdea } from '@/types'
 
-const DB_NAME = 'flowspace'
-const DB_VERSION = 1
+import { createClient } from '@supabase/supabase-js'
 
-let db: IDBPDatabase | null = null
+const sb = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+// ── Projects ──────────────────────────────────────────────────────────────────
 
-export async function getDB() {
-  if (db) return db
-  db = await openDB(DB_NAME, DB_VERSION, {
-    upgrade(database) {
-      const stores = ['projects', 'tasks', 'reflections', 'mood_entries', 'brain_dump', 'sync_queue']
-      for (const store of stores) {
-        if (!database.objectStoreNames.contains(store)) {
-          database.createObjectStore(store, { keyPath: 'id' })
-        }
-      }
-    },
-  })
-  return db
+export async function fetchProjects(userId: string): Promise<Project[]> {
+  const { data } = await sb.from('projects').select('*').eq('user_id', userId).order('created_at', { ascending: false })
+  return (data as Project[]) || []
 }
 
-export async function localGet<T>(store: string, id: string): Promise<T | undefined> {
-  const database = await getDB()
-  return database.get(store, id)
+export async function upsertProject(project: Project): Promise<void> {
+  await sb.from('projects').upsert(project)
 }
 
-export async function localGetAll<T>(store: string): Promise<T[]> {
-  const database = await getDB()
-  return database.getAll(store)
+export async function removeProject(id: string): Promise<void> {
+
+  await sb.from('projects').delete().eq('id', id)
 }
 
-export async function localPut<T>(store: string, value: T): Promise<void> {
-  const database = await getDB()
-  await database.put(store, value)
+// ── Tasks ─────────────────────────────────────────────────────────────────────
+
+export async function fetchTasks(userId: string): Promise<Task[]> {
+
+  const { data } = await sb.from('tasks').select('*').eq('user_id', userId).order('created_at', { ascending: false })
+  return (data as Task[]) || []
 }
 
-export async function localDelete(store: string, id: string): Promise<void> {
-  const database = await getDB()
-  await database.delete(store, id)
+export async function upsertTask(task: Task): Promise<void> {
+
+  await sb.from('tasks').upsert(task)
 }
 
-export async function queueSync(operation: { type: 'create' | 'update' | 'delete'; store: string; data: any }) {
-  const database = await getDB()
-  await database.put('sync_queue', {
-    id: `${Date.now()}-${Math.random()}`,
-    ...operation,
-    queued_at: new Date().toISOString(),
-  })
+export async function removeTask(id: string): Promise<void> {
+
+  await sb.from('tasks').delete().eq('id', id)
 }
 
-export async function getSyncQueue() {
-  const database = await getDB()
-  return database.getAll('sync_queue')
+// ── Reflections ───────────────────────────────────────────────────────────────
+
+export async function fetchReflections(userId: string): Promise<Reflection[]> {
+
+  const { data } = await sb.from('reflections').select('*').eq('user_id', userId).order('created_at', { ascending: false })
+  return (data as Reflection[]) || []
 }
 
-export async function clearSyncItem(id: string) {
-  const database = await getDB()
-  await database.delete('sync_queue', id)
+export async function upsertReflection(reflection: Reflection): Promise<void> {
+
+  await sb.from('reflections').upsert(reflection)
+}
+
+export async function removeReflection(id: string): Promise<void> {
+
+  await sb.from('reflections').delete().eq('id', id)
+}
+
+// ── Mood entries ──────────────────────────────────────────────────────────────
+
+export async function fetchMoodEntries(userId: string): Promise<MoodEntry[]> {
+
+  const { data } = await sb.from('mood_entries').select('*').eq('user_id', userId).order('created_at', { ascending: false })
+  return (data as MoodEntry[]) || []
+}
+
+export async function upsertMoodEntry(entry: MoodEntry): Promise<void> {
+ 
+  await sb.from('mood_entries').upsert(entry)
+}
+
+// ── Ideas ─────────────────────────────────────────────────────────────────────
+
+export async function fetchIdeas(userId: string): Promise<BrainDumpIdea[]> {
+
+  const { data } = await sb.from('ideas').select('*').eq('user_id', userId).order('created_at', { ascending: false })
+  return (data as BrainDumpIdea[]) || []
+}
+
+export async function upsertIdea(idea: BrainDumpIdea): Promise<void> {
+
+  await sb.from('ideas').upsert(idea)
+}
+
+export async function removeIdea(id: string): Promise<void> {
+
+  await sb.from('ideas').delete().eq('id', id)
 }
