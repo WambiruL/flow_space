@@ -28,6 +28,7 @@ interface AppState {
   setReflections: (reflections: Reflection[]) => void
   addReflection: (reflection: Omit<Reflection, 'id' | 'user_id' | 'created_at'>) => Reflection
   updateReflection: (id: string, updates: Partial<Reflection>) => void
+  deleteReflection: (id: string) => void
 
   // Mood
   moodEntries: MoodEntry[]
@@ -90,7 +91,7 @@ export const useStore = create<AppState>()(
         const newTask: Task = {
           id: generateId(),
           user_id: get().userId || 'local',
-  
+          // completed: false,
           completed_at: null,
           created_at: now,
           updated_at: now,
@@ -142,6 +143,9 @@ export const useStore = create<AppState>()(
       },
       updateReflection: (id, updates) => set(s => ({
         reflections: s.reflections.map(r => r.id === id ? { ...r, ...updates } : r),
+      })),
+      deleteReflection: (id) => set(s => ({
+        reflections: s.reflections.filter(r => r.id !== id),
       })),
 
       moodEntries: [],

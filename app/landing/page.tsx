@@ -1111,7 +1111,125 @@ const KEYFRAMES = `
       animation-iteration-count: 1 !important;
     }
   }
-`
+
+  /* ── Mobile Responsive ─────────────────────────────────────────────────── */
+
+  /* Hide desktop nav links on mobile */
+  @media (max-width: 768px) {
+    .nav-links-desktop { display: none !important; }
+    .nav-cta-desktop   { display: none !important; }
+
+    /* Slide animations become simple fade-up on mobile */
+    .hiw-reveal-left.visible  { animation-name: revealUp !important; }
+    .hiw-reveal-right.visible { animation-name: revealUp !important; }
+
+    /* How It Works step grids → single column */
+    .step-grid {
+      grid-template-columns: 1fr !important;
+      gap: 32px !important;
+      padding: 48px 20px !important;
+    }
+
+    /* Reverse order fix — on mobile, demo always comes after copy */
+    .step-demo-reverse { order: -1; }
+
+    /* Energy engine layout */
+    .energy-grid {
+      grid-template-columns: 1fr !important;
+      gap: 32px !important;
+    }
+
+    /* Mood & Patterns layout */
+    .mood-grid {
+      grid-template-columns: 1fr !important;
+      gap: 40px !important;
+    }
+
+    /* Pricing cards stack */
+    .pricing-grid {
+      grid-template-columns: 1fr !important;
+      gap: 16px !important;
+    }
+
+    /* Flow card — remove negative margin top on mobile */
+    .flow-card-featured { margin-top: 0 !important; }
+
+    /* Stats bar in pricing — 2x2 grid on mobile */
+    .stats-bar {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 24px !important;
+      padding: 32px 20px 48px !important;
+    }
+    .stats-bar > div {
+      padding: 0 12px !important;
+      border-right: none !important;
+    }
+
+    /* Trust bar wraps */
+    .trust-bar {
+      gap: 20px !important;
+      padding: 0 16px !important;
+    }
+
+    /* Brain dump card — full width */
+    .capture-card { border-radius: 14px !important; }
+
+    /* Inner council chat window */
+    .council-window { border-radius: 14px !important; }
+
+    /* CTA chips wrap tighter */
+    .cta-chips-row { gap: 8px !important; }
+
+    /* Footer — stack on mobile */
+    .landing-footer {
+      flex-direction: column !important;
+      align-items: center !important;
+      gap: 16px !important;
+      text-align: center;
+    }
+
+    /* Section padding — tighter on mobile */
+    .section-pad {
+      padding: 72px 20px 88px !important;
+    }
+  }
+
+  /* Testimonials — reflow to scrollable column on mobile */
+  @media (max-width: 640px) {
+    .testimonials-constellation {
+      height: auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 14px !important;
+      padding: 0 16px !important;
+    }
+    .t-card {
+      position: relative !important;
+      width: 100% !important;
+      top: auto !important;
+      left: auto !important;
+      transform: none !important;
+      animation: cardConstella 0.5s cubic-bezier(0.16,1,0.3,1) both !important;
+      float: none !important;
+    }
+    .t-card.selected {
+      animation: haloBreath 2.8s ease-in-out infinite !important;
+    }
+  }
+
+  /* Nav responsive */
+  @media (max-width: 480px) {
+    .hero-section-pad { padding: 48px 16px 64px !important; }
+    .hero-main-grid {
+      grid-template-columns: 1fr !important;
+      gap: 40px !important;
+      padding: 40px 16px 60px !important;
+    }
+    .brain-dump-center { max-width: 100% !important; padding: 0 16px !important; }
+    .council-center    { max-width: 100% !important; padding: 0 16px !important; }
+    .closing-center    { padding: 0 16px !important; }
+  }`
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false)
@@ -1164,14 +1282,14 @@ export default function LandingPage() {
           </div>
 
           {/* Nav links */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 36 }}>
+          <div className="nav-links-desktop" style={{ display: 'flex', alignItems: 'center', gap: 36 }}>
             {['Features', 'How It Works', 'Inner Council', 'Pricing'].map(l => (
               <a key={l} href={`#${l.toLowerCase().replace(/ /g, '-')}`} className="nav-link">{l}</a>
             ))}
           </div>
 
           {/* Nav CTA */}
-          <Link href="/auth" className="btn-primary-hero" style={{ padding: '10px 22px', fontSize: 14, borderRadius: 12 }}>
+          <Link href="/auth" className="btn-primary-hero nav-cta-desktop" style={{ padding: '10px 22px', fontSize: 14, borderRadius: 12 }}>
             Get Started
           </Link>
         </nav>
@@ -1205,7 +1323,7 @@ export default function LandingPage() {
           <div style={{ position: 'absolute', zIndex: 0, pointerEvents: 'none', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(ellipse, #A4420018 0%, transparent 65%)', top: '50%', right: '5%', transform: 'translateY(-50%)' }} />
 
           {/* Main grid */}
-          <div style={{
+          <div className="hero-main-grid" style={{
             position: 'relative', zIndex: 2,
             maxWidth: 1200, width: '100%',
             margin: '0 auto',
@@ -1620,6 +1738,7 @@ function Step01() {
   return (
     <div
       ref={ref}
+      className="step-grid"
       style={{
         maxWidth: 1100, margin: '0 auto',
         padding: '64px 48px',
@@ -1712,7 +1831,7 @@ function Step02() {
   return (
     <div
       ref={ref}
-      className="hiw-row-alt"
+      className="hiw-row-alt step-grid"
       style={{
         maxWidth: 1100, margin: '0 auto',
         padding: '64px 48px',
@@ -1793,6 +1912,7 @@ function Step03() {
   return (
     <div
       ref={ref}
+      className="step-grid"
       style={{
         maxWidth: 1100, margin: '0 auto',
         padding: '64px 48px',
@@ -1886,7 +2006,7 @@ function Step04() {
   return (
     <div
       ref={ref}
-      className="hiw-row-alt"
+      className="hiw-row-alt step-grid"
       style={{
         maxWidth: 1100, margin: '0 auto',
         padding: '64px 48px',
@@ -2114,10 +2234,9 @@ function EnergyEngineSection() {
   return (
     <section
       id="features"
+      className="section-pad"
       style={{
         position: 'relative',
-        // Darker base so the amber dial glows *against* darkness — fixes the
-        // background-merge issue from the review
         background: 'linear-gradient(180deg, #2E1012 0%, #321214 60%, #3C1518 100%)',
         overflow: 'hidden',
         padding: '120px 48px 140px',
@@ -2183,7 +2302,7 @@ function EnergyEngineSection() {
 
         {/* ── Main interactive grid ── */}
         <div
-          className={`hiw-reveal ${visible ? 'visible' : ''}`}
+          className={`hiw-reveal energy-grid ${visible ? 'visible' : ''}`}
           style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
@@ -2665,6 +2784,7 @@ function InnerCouncilSection() {
   return (
     <section
       id="inner-council"
+      className="section-pad"
       style={{
         position: 'relative',
         background: '#3C1518',
@@ -3194,6 +3314,7 @@ function MoodPatternsSection() {
   return (
     <section
       id="mood-patterns"
+      className="section-pad"
       style={{
         position: 'relative',
         background: 'linear-gradient(180deg, #3C1518 0%, #381316 50%, #3C1518 100%)',
@@ -3259,7 +3380,7 @@ function MoodPatternsSection() {
         </div>
 
         {/* ── Main two-column layout ── */}
-        <div style={{
+        <div className="mood-grid" style={{
           display: 'grid',
           gridTemplateColumns: '1.15fr 1fr',
           gap: 72,
@@ -3684,6 +3805,7 @@ function BrainDumpSection() {
   return (
     <section
       id="brain-dump"
+      className="section-pad"
       style={{
         position: 'relative',
         background: '#3C1518',
@@ -4191,7 +4313,7 @@ function TestimonialsSection() {
 
         {/* ── Constellation ── */}
         {/* Fixed-height canvas — cards positioned absolutely within */}
-        <div style={{
+        <div className="testimonials-constellation" style={{
           position: 'relative',
           height: 620,
           maxWidth: 1100,
@@ -4281,7 +4403,7 @@ function TestimonialsSection() {
         {/* end constellation */}
 
         {/* ── Stats bar ── */}
-        <div style={{
+        <div className="stats-bar" style={{
           borderTop: '1px solid rgba(107,36,32,0.35)',
           marginTop: 20,
           padding: '52px 48px 80px',
@@ -4492,6 +4614,7 @@ function PricingSection() {
   return (
     <section
       id="pricing"
+      className="section-pad"
       style={{
         position: 'relative',
         background: 'linear-gradient(180deg, #3C1518 0%, #2E1012 40%, #321214 100%)',
@@ -4616,7 +4739,7 @@ function PricingSection() {
         </div>
 
         {/* ── Cards ── */}
-        <div style={{
+        <div className="pricing-grid" style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1.12fr 1fr',
           gap: 20,
@@ -4714,7 +4837,7 @@ function PricingSection() {
           </div>
 
           {/* ════ FLOW — featured ════ */}
-          <div style={{ position: 'relative', marginTop: -16 }}>
+          <div className="flow-card-featured" style={{ position: 'relative', marginTop: -16 }}>
             {/* Most Popular badge — refined pill from review */}
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
               <div className="most-popular-badge">
@@ -4926,7 +5049,7 @@ function PricingSection() {
         {/* end cards grid */}
 
         {/* ── Trust bar ── */}
-        <div style={{
+        <div className="trust-bar" style={{
           display: 'flex', justifyContent: 'center',
           gap: 48, flexWrap: 'wrap' as const,
           marginTop: 60,
@@ -5237,6 +5360,7 @@ function ClosingCTASection() {
 
       {/* ── Footer ── */}
       <footer
+        className="landing-footer"
         style={{
           position: 'relative', zIndex: 2,
           width: '100%', maxWidth: 1100,
@@ -5292,4 +5416,3 @@ function ClosingCTASection() {
     </section>
   )
 }
-
