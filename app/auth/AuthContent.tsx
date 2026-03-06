@@ -328,9 +328,9 @@ const handleOAuth = async () => {
               <div className="flex-1 border-t" style={{ borderColor: '#6B2420' }} />
             </div>
 
-            <button onClick={handleDemo} className="btn-secondary w-full py-2.5 justify-center">
+            {/* <button onClick={handleDemo} className="btn-secondary w-full py-2.5 justify-center">
               Continue as guest
-            </button>
+            </button> */}
           </div>
         </div>
 
