@@ -1,6 +1,6 @@
 # FlowSpace — Personal Mental Operating System
 
-> A personal command center for creative technologists juggling projects, job applications, design work, and self-reflection.
+> A personal command center for creative technologists
 
 ## Features
 
@@ -11,7 +11,6 @@
 - **Mood & Focus Tracker** — Daily logging with weekly/monthly charts
 - **Brain Dump Vault** — Quick idea capture with tag search and conversion
 - **Offline Mode** — Full functionality without internet via Zustand localStorage
-- **AI Suggestion Engine** — No external LLM; built-in recommendation logic
 
 ---
 
