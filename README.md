@@ -20,7 +20,7 @@
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/yourname/flowspace.git
+git clone https://github.com/WambiruL/flowspace.git
 cd flowspace
 npm install
 ```
@@ -28,16 +28,16 @@ npm install
 ### 2. Environment Variables
 
 ```bash
-cp .env.example .env.local
+cp .env
 ```
 
-Edit `.env.local` with your Supabase credentials (or leave blank to use demo/offline mode).
+Edit `.env` with your Supabase credentials (or leave blank to use demo/offline mode).
 
 ### 3. Set Up Supabase (Optional)
 
 1. Create project at https://supabase.com
 2. Go to **SQL Editor** and paste contents of `schema.sql`
-3. Copy your **Project URL** and **anon key** into `.env.local`
+3. Copy your **Project URL** and **anon key** into `.env`
 
 ### 4. Run Development Server
 
@@ -105,75 +105,9 @@ flowspace/
 ├── types/
 │   └── index.ts                # TypeScript types
 ├── schema.sql                  # Supabase DB schema
-└── .env.example
+└── .env
+
 ```
-
----
-
-## Deploy to Vercel
-
-1. Push to GitHub
-2. Connect repo in https://vercel.com/new
-3. Add environment variables from `.env.example`
-4. Click Deploy
-
-**One-liner:**
-```bash
-npx vercel --prod
-```
-
----
-
-## Testing
-
-### Manual Testing Checklist
-
-**Auth**
-- [ ] Sign up with new email/password
-- [ ] Sign in with existing account
-- [ ] Demo mode works without Supabase
-
-**Dashboard**
-- [ ] Energy level changes and persists after refresh
-- [ ] Alerts appear when 5+ high-priority tasks exist
-- [ ] Projects show with progress bars
-- [ ] Suggested tasks match energy level
-
-**Projects**
-- [ ] Create, edit, delete projects
-- [ ] Progress auto-updates when tasks are completed
-- [ ] Filter by status
-
-**Tasks**
-- [ ] Create tasks with all fields
-- [ ] Toggle complete/incomplete
-- [ ] Smart suggestions panel shows energy-matched tasks
-- [ ] Overdue tasks highlighted
-
-**Inner Council**
-- [ ] Enter dilemma → generates 5 prompts
-- [ ] Write responses per perspective
-- [ ] Save reflection → appears in archive
-- [ ] Search reflections
-
-**Mood Tracker**
-- [ ] Log today's mood/focus/energy
-- [ ] Update existing entry
-- [ ] Weekly chart renders correctly
-- [ ] 30-day chart renders with averages
-
-**Brain Dump**
-- [ ] Capture idea with tags
-- [ ] Search by content and tags
-- [ ] Convert idea to task
-- [ ] Convert idea to project
-
-**Offline**
-- [ ] Disable network in DevTools
-- [ ] All features still work
-- [ ] Reconnect → data persists
-
----
 
 ## Tech Stack
 
@@ -187,4 +121,3 @@ npx vercel --prod
 | Charts | Recharts |
 | Offline | Zustand persistence + IndexedDB utilities |
 | Icons | Lucide React |
-| Fonts | Playfair Display + DM Sans |
