@@ -4749,19 +4749,22 @@ function PricingSection() {
           {/* ════ SPARK ════ */}
           {/* Hairline gradient border wrap from review */}
           <div
-            className={`spark-card-wrap pricing-card-enter pc-1 ${visible ? 'visible' : ''}`}
+            className={`pricing-card-enter pc-3 ${visible ? 'visible' : ''}`}
           >
             <div style={{
-              borderRadius: 19,
+              borderRadius: 20,
               background: 'linear-gradient(160deg, rgba(52,16,18,0.95), rgba(40,12,14,0.98))',
               padding: '28px 24px 24px',
+              border: '1px solid rgba(107,36,32,0.45)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(242,243,174,0.04)',
+
             }}>
               {/* Tier label */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 16 }}>
                 <div style={{
                   width: 8, height: 8, borderRadius: '50%',
                   background: 'rgba(164,66,0,0.60)',
-                  boxShadow: '0 0 6px rgba(164,66,0,0.40)',
+                   boxShadow: '0 0 6px rgba(201,168,245,0.40)',
                 }} />
                 <span style={{
                   fontSize: 10, fontWeight: 800, letterSpacing: '0.12em',
@@ -4780,7 +4783,7 @@ function PricingSection() {
               }}>
                 Spark
               </h3>
-              <p style={{ fontSize: 12, color: '#6B2420', fontFamily: "'Nunito', sans-serif", marginBottom: 24 }}>
+              <p style={{ fontSize: 12, color: '#8A8A45', fontFamily: "'Nunito', sans-serif", marginBottom: 24 }}>
                 Begin your practice
               </p>
 
@@ -4795,7 +4798,7 @@ function PricingSection() {
                   Free
                 </span>
               </div>
-              <p style={{ fontSize: 12, color: '#6B2420', fontFamily: "'Nunito', sans-serif", marginBottom: 28 }}>
+              <p style={{ fontSize: 12, color: '#8A8A45', fontFamily: "'Nunito', sans-serif", marginBottom: 28 }}>
                 Forever free, no card needed
               </p>
 
@@ -4905,7 +4908,7 @@ function PricingSection() {
                       {flowPrice}
                     </span>
                     <span style={{
-                      fontSize: 14, color: '#6B2420',
+                      fontSize: 14, color: '#8A8A45',
                       fontFamily: "'Nunito', sans-serif",
                       marginTop: 'auto', paddingBottom: 8,
                     }}>/mo</span>
@@ -4993,7 +4996,7 @@ function PricingSection() {
             }}>
               Radiant
             </h3>
-            <p style={{ fontSize: 12, color: '#6B2420', fontFamily: "'Nunito', sans-serif", marginBottom: 24 }}>
+            <p style={{ fontSize: 12, color: '#8A8A45', fontFamily: "'Nunito', sans-serif", marginBottom: 24 }}>
               For teams in flow
             </p>
 
@@ -5014,7 +5017,7 @@ function PricingSection() {
                   {radiantPrice}
                 </span>
                 <span style={{
-                  fontSize: 14, color: '#6B2420',
+                  fontSize: 14, color: '#8A8A45',
                   fontFamily: "'Nunito', sans-serif",
                   marginTop: 'auto', paddingBottom: 8,
                 }}>/mo</span>
