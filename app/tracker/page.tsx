@@ -70,7 +70,7 @@ export default function TrackerPage() {
     <div className="space-y-6 animate-fade-in">
 
       <div>
-        <h1 className="font-display text-4xl font-semibold text-gradient">Mood & Focus</h1>
+          <h1 className="font-display text-4xl font-semibold" style={{ color: '#F2F3AE' }}>Mood & Focus</h1>
         <p className="text-sm mt-1" style={{ color: '#8A8A45' }}>Track how you're doing — patterns reveal a lot.</p>
       </div>
 
@@ -172,7 +172,7 @@ export default function TrackerPage() {
           ) : (
             <>
               {/* Stats */}
-              <div className="grid grid-cols-3 gap-3" style={{fontFamily: "'Nunito', sans-serif"}}>
+              <div className="grid grid-cols-3 gap-3" style={{ color: '#F2F3AE', fontFamily: "'Nunito', sans-serif"}}>
                 {[
                   { label: 'Avg Mood',   value: avg(chartData.map(d => d.mood)),   color: '#F2F3AE', emoji: '🌡' },
                   { label: 'Avg Focus',  value: avg(chartData.map(d => d.focus)),  color: '#D58936', emoji: '🎯' },

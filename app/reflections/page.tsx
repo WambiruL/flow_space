@@ -738,14 +738,9 @@ Write a synthesis of 3-4 sentences that holds the tension between all voices and
 
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Brain size={20} style={{ color: '#D58936' }} />
-          <h1 style={{
-            fontFamily: "'Cormorant Garamond', serif",
-            fontSize: 24, fontWeight: 700, color: '#F2F3AE',
-          }}>
-            Inner Council
-          </h1>
+        <div>
+          <h1 className="font-display text-4xl font-semibold" style={{ color: '#F2F3AE' }}>Inner Council</h1>
+        {/* <p className="text-sm mt-1" style={{ color: '#8A8A45' }}>Track how you're doing — patterns reveal a lot.</p> */}
         </div>
         <button
           onClick={() => setMode('new')}

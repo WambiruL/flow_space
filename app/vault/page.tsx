@@ -58,7 +58,7 @@ export default function VaultPage() {
     <div className="space-y-6 animate-fade-in">
 
       <div>
-        <h1 className="font-display text-4xl font-semibold text-gradient">Brain Dump</h1>
+          <h1 className="font-display text-4xl font-semibold" style={{ color: '#F2F3AE' }}>Brain Dump</h1>
         <p className="text-sm mt-1" style={{ color: '#8A8A45' }}>Capture everything without judgment. Process later.</p>
       </div>
 
