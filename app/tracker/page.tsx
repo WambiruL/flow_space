@@ -93,7 +93,7 @@ export default function TrackerPage() {
           <div className="card-accent space-y-6">
 
             <div className="flex items-center justify-between">
-              <h3 className="font-display font-semibold text-xl" style={{ color: '#F2F3AE' }}>
+              <h3 className="font-display font-semibold text-sm" style={{ color: '#F2F3AE', fontFamily: "'Nunito', sans-serif"}}>
                 {format(new Date(), 'MMMM d, yyyy')}
               </h3>
               {todayEntry && (
@@ -172,7 +172,7 @@ export default function TrackerPage() {
           ) : (
             <>
               {/* Stats */}
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-3" style={{fontFamily: "'Nunito', sans-serif"}}>
                 {[
                   { label: 'Avg Mood',   value: avg(chartData.map(d => d.mood)),   color: '#F2F3AE', emoji: '🌡' },
                   { label: 'Avg Focus',  value: avg(chartData.map(d => d.focus)),  color: '#D58936', emoji: '🎯' },

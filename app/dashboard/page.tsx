@@ -1,15 +1,77 @@
 'use client'
 
 import { useStore } from '@/store'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+// import { useRouter } from 'next/navigation'
+import { useEffect, useState, JSX } from 'react'
 import { recommendTasks, detectAlerts } from '@/lib/ai-engine'
 import { cn, ENERGY_LABELS, formatDate } from '@/lib/utils'
 import { Plus, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
+import { createClient } from '@supabase/supabase-js'
 
-const ENERGY_ICONS: Record<number, string> = { 1: '😴', 2: '😐', 3: '🙂', 4: '😄', 5: '🔥' }
-const GREET_EMOJI: Record<string, string>  = { morning: '🌅', afternoon: '☀️', evening: '🕯️' }
+const GREET_ICON: Record<string, JSX.Element> = {
+  morning: (
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D58936" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+      <circle cx="12" cy="12" r="4" fill="#D5893620"/>
+    </svg>
+  ),
+  afternoon: (
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#F2A74B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="5" fill="#F2A74B20"/>
+      <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+    </svg>
+  ),
+  evening: (
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C9A8F5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="#C9A8F520"/>
+    </svg>
+  ),
+}
+
+const ENERGY_ICONS: Record<number, JSX.Element> = {
+  1: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 18a5 5 0 0 0-10 0"/>
+      <line x1="12" y1="2" x2="12" y2="9"/>
+      <line x1="4.22" y1="10.22" x2="5.64" y2="11.64"/>
+      <line x1="1" y1="18" x2="3" y2="18"/>
+      <line x1="21" y1="18" x2="23" y2="18"/>
+      <line x1="18.36" y1="11.64" x2="19.78" y2="10.22"/>
+      <line x1="23" y1="22" x2="1" y2="22"/>
+      <polyline points="16 5 12 9 8 5"/>
+    </svg>
+  ),
+  2: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="8" y1="15" x2="16" y2="15"/>
+      <line x1="9" y1="9" x2="9.01" y2="9"/>
+      <line x1="15" y1="9" x2="15.01" y2="9"/>
+    </svg>
+  ),
+  3: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M8 13s1.5 2 4 2 4-2 4-2"/>
+      <line x1="9" y1="9" x2="9.01" y2="9"/>
+      <line x1="15" y1="9" x2="15.01" y2="9"/>
+    </svg>
+  ),
+  4: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M8 13s1.5 3 4 3 4-3 4-3"/>
+      <line x1="9" y1="9" x2="9.01" y2="9"/>
+      <line x1="15" y1="9" x2="15.01" y2="9"/>
+    </svg>
+  ),
+  5: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+    </svg>
+  ),
+}
 
 // Category colours mapped to the new palette
 const CAT_STYLE: Record<string, { bg: string; color: string }> = {
@@ -26,15 +88,27 @@ const PRIORITY_STYLE: Record<string, { bg: string; color: string }> = {
 }
 
 export default function DashboardPage() {
-  const { projects, tasks, moodEntries, energyLevel, setEnergyLevel, userId } = useStore()
-  const router = useRouter()
+  const { projects, tasks, moodEntries, energyLevel, setEnergyLevel} = useStore()
+  // const router = useRouter()
   const [todayMood, setTodayMood] = useState<any>(null)
+  const [userName, setUserName]   = useState<string>('')
 
-  useEffect(() => { if (!userId) router.push('/auth') }, [userId, router])
+  // useEffect(() => { if (!userId) router.push('/auth') }, [userId, router])
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0]
     setTodayMood(moodEntries.find(e => e.date === today) || null)
   }, [moodEntries])
+
+  useEffect(() => {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      const name = user?.user_metadata?.name || user?.email?.split('@')[0] || ''
+      setUserName(name)
+    })
+  }, [])
 
   const tod        = getTimeOfDay()
   const activeProj = projects.filter(p => p.status === 'Active')
@@ -53,9 +127,12 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="font-display text-4xl font-semibold" style={{ color: '#F2F3AE' }}>
-            {GREET_EMOJI[tod]} Good {tod}
-          </h1>
+          <div className="flex items-center gap-3 mb-1">
+            {GREET_ICON[tod]}
+            <h1 className="font-display text-4xl font-semibold" style={{ color: '#F2F3AE' }}>
+              Good {tod}{userName ? `, ${userName.split(' ')[0]}` : ''}
+            </h1>
+          </div>
           <p className="text-sm mt-1" style={{ color: '#8A8A45' }}>
             {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </p>
@@ -111,7 +188,7 @@ export default function DashboardPage() {
                 key={n}
                 onClick={() => setEnergyLevel(n)}
                 title={ENERGY_LABELS[n]}
-                className="flex-1 h-11 rounded-xl text-base transition-all duration-200"
+                className="flex-1 h-11 rounded-xl transition-all duration-200 flex items-center justify-center"
                 style={energyLevel === n ? {
                   background: 'linear-gradient(135deg, #A44200, #D58936)',
                   color: '#F2F3AE',
